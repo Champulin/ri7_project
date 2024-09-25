@@ -1,0 +1,3 @@
+[submodule "webformideo"]
+	path = webformideo
+	url = https://github.com/eWeb-Solutions/webformideo.git

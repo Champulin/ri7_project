@@ -1,0 +1,37 @@
+#git ignore for the project
+.DS_Store
+
+# Ignore Python bytecode files
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Ignore virtual environment directories
+venv/
+
+# Ignore .env file
+.env
+
+# Ignore Docker-related files
+.dockerignore
+
+# Ignore node_modules directory for Next.js
+node_modules/
+
+# Ignore build output directories for Next.js
+.next/
+out/
+
+# Ignore log files
+*.log
+
+# Ignore local environment files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore miscellaneous files
+.DS_Store
+Thumbs.db
