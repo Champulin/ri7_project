@@ -12,6 +12,7 @@ venv/
 
 # Ignore .env file
 .env
+db.sqlite3
 
 # Ignore Docker-related files
 .dockerignore
