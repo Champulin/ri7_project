@@ -1,25 +1,17 @@
-"""
-URL configuration for mybookreader project.
+# mybookreader/urls.py
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
-from django.contrib import admin
+from django.contrib import admin  # Make sure this import is included
 from django.urls import path, include
 from django.conf.urls.static import static
 from . import settings
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-      path('api/v1/', include('core.urls')), 
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # Admin route
+    path('admin/', admin.site.urls),  # Make sure admin is correctly imported
+
+    # Include the API routes for 'core' (which might be related to books, etc.)
+    path('api/v1/', include('core.urls')),  # This should remain as it was to handle core routes
+    
+    # Include user-related API routes
+    path('api/v1/users/', include('users.urls')),  # Prefix changed to 'api/v1/users/'
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from core.serializers import UserSerializer
 from users.models import NewUser  # Import your user model
+from core.serializers import UserBookSerializer
+from rest_framework.generics import ListAPIView
 
 
 # Create a user
@@ -49,7 +51,13 @@ class UserDetailView(APIView):
 from rest_framework import generics
 from books.models import Author, Book
 from core.serializers import AuthorSerializer, BookSerializer
-
+from rest_framework import generics
+from .models import UserBook
+from books.models import Book
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics
+from core.models import UserBook
+from core.serializers import UserBookSerializer
 
 # CRUD for Author
 class AuthorListCreateView(generics.ListCreateAPIView):
@@ -71,3 +79,17 @@ class BookListCreateView(generics.ListCreateAPIView):
 class BookDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
+# core/views.py
+
+
+
+class UserBooksListView(ListAPIView):
+    serializer_class = UserBookSerializer
+
+    def get_queryset(self):
+        user = self.request.user  # Assuming you're fetching books for the logged-in user
+        return UserBook.objects.filter(user=user)
+
+class UserBookDetailView(generics.UpdateAPIView):
+    queryset = UserBook.objects.all()  # The model to update
+    serializer_class = UserBookSerializer  # The serializer to validate and update the data
