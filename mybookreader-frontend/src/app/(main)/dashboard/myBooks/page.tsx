@@ -1,170 +1,267 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { fetchUserBooks, updateUserBook } from '@/app/lib/api/APIoperations'; // Import the fetch function and update function
+import { useState, useEffect, useContext } from 'react';
+import { fetchAuthors, createBook, fetchUserBooks, createUserBook } from '@/app/lib/api/APIoperations';  // Import necessary functions
+import AuthContext from '@/app/context/AuthContext';  // Import AuthContext for user info
+import { UserBookData } from '@/app/lib/api/APIoperations';
+
+// Define types for book data and author
+interface Author {
+    id: number;
+    name: string;
+}
+
+interface BookData {
+    title: string;
+    description: string;
+    cover_image: File | null;
+}
+
 
 const MyBooks = () => {
-    const [userBooks, setUserBooks] = useState<any[]>([]);  // State to store the books
-    const [error, setError] = useState<string>('');  // State to store any errors
-    const [loading, setLoading] = useState<boolean>(true);  // State to handle loading status
+    const { user, loading } = useContext(AuthContext);  // Access user from AuthContext
+    const [authors, setAuthors] = useState<Author[]>([]);  // State to store authors
+    const [selectedAuthor, setSelectedAuthor] = useState<Author | null>(null);  // State to store selected author
+    const [error, setError] = useState<string>('');  // State to handle errors
+    const [bookData, setBookData] = useState<BookData>({  // State to store book data
+        title: '',
+        description: '',
+        cover_image: null,
+    });
+    const [showForm, setShowForm] = useState<boolean>(false);  // State to handle form visibility
+    const [userBooks, setUserBooks] = useState<UserBookData[]>([]);  // State to store user books
+    const [review, setReview] = useState<string>('');  // State to store review
+    const [rating, setRating] = useState<number>(0);  // State to store rating
+    const [readingStatus, setReadingStatus] = useState<string>('A');  // State to store reading status
 
-    // State to manage the book being edited
-    const [editingBook, setEditingBook] = useState<any | null>(null);
-    const [updatedBook, setUpdatedBook] = useState<any | null>(null);
-
-    // Fetch user books when the component mounts
+    // Fetch authors and user books when the component mounts
     useEffect(() => {
-        const loadUserBooks = async () => {
+        const loadAuthorsAndBooks = async () => {
             try {
-                const books = await fetchUserBooks();  // Fetch books using the API function
-                console.log(books);
-                setUserBooks(books);  // Store the books in state
+                const authors = await fetchAuthors();  // Fetch authors from the API
+                setAuthors(authors);  // Set authors in the state
+
+                const books = await fetchUserBooks();  // Fetch user books from the API
+                console.log('books:', books);
+                setUserBooks(books);  // Set user books in the state
             } catch (error) {
-                setError('Failed to fetch books');  // Set error if the fetch fails
-            } finally {
-                setLoading(false);  // Stop loading when the fetch is done
+                setError('Échec de la récupération des auteurs ou des livres');
             }
         };
 
-        loadUserBooks();  // Call the function to load the books
-    }, []);  // Empty dependency array means this effect runs only once, on mount
+        loadAuthorsAndBooks();  // Load authors and user books when the component mounts
+    }, []);
 
-    // If the books are still loading, display a loading message
-    if (loading) {
-        return <p>Loading your books...</p>;
-    }
-
-    // If there was an error, display the error message
-    if (error) {
-        return <p className="text-red-500">{error}</p>;
-    }
-
-    // Handle edit button click
-    const handleEditClick = (book: any) => {
-        setEditingBook(book);
-        setUpdatedBook(book);  // Copy the book data to the updatedBook state
-    };
-
-    // Handle input change for the book fields
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
-        setUpdatedBook({
-            ...updatedBook,
+    // Handle changes in the book form
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: keyof BookData) => {
+        setBookData({
+            ...bookData,
             [field]: e.target.value,
         });
     };
 
-    // Handle save click to update the book details
-    const handleSaveClick = async () => {
-        try {
-            await updateUserBook(updatedBook.id, updatedBook);  // Update the book via API
-            setUserBooks(prevBooks =>
-                prevBooks.map(book =>
-                    book.id === updatedBook.id ? updatedBook : book
-                )
-            );
-            setEditingBook(null);  // Reset editing mode
-        } catch (error) {
-            setError('Failed to update the book');
+    // Handle the author selection change
+    const handleAuthorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedAuthorId = parseInt(e.target.value);
+        const author = authors.find((a) => a.id === selectedAuthorId);
+        setSelectedAuthor(author ?? null);  // Set selected author
+    };
+
+    // Handle file input for cover image
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files?.[0]) {
+            setBookData({
+                ...bookData,
+                cover_image: e.target.files[0],
+            });
         }
     };
 
-    // Handle cancel click to stop editing
-    const handleCancelClick = () => {
-        setEditingBook(null);
+    const handleCreateBook = async () => {
+        const { title, description, cover_image } = bookData;
+
+        if (!selectedAuthor) {
+            setError('Please select an author');
+            return;
+        }
+
+        if (!title || !description || !cover_image) {
+            setError('Please fill in all fields');
+            return;
+        }
+
+        if (!user) {
+            setError('No user logged in');
+            return;
+        }
+
+        try {
+            // First, create the book
+            const book = await createBook({ title, description, cover_image, authorId: selectedAuthor.id });
+
+            // After the book is created, create the UserBook with the user ID and book ID
+            await createUserBook({
+                bookId: book.id,
+                userId: user.id,
+                review: review,
+                rating: rating,
+                readingStatus: readingStatus
+            });
+
+            console.log('Book and UserBook created successfully!');
+        } catch (error) {
+            setError('Error creating the book or UserBook');
+            console.error(error);
+        }
     };
+
+
+    if (loading) {
+        return <p>Chargement des auteurs et des livres...</p>;
+    }
 
     return (
         <div className="min-h-screen flex flex-col items-center justify-center text-black">
-            <h1 className="text-3xl font-bold mb-4">My Books</h1>
-            <div className="w-full max-w-lg bg-white p-6 rounded-lg shadow-md">
-                <h2 className="text-xl font-semibold mb-4">Books List</h2>
-                {userBooks.length === 0 ? (
-                    <p>No books found.</p>  // Display this message if no books are found
-                ) : (
-                    <ul className="space-y-4">
-                        {userBooks.map((book, index) => (
-                            <li key={index} className="border-b py-4">
-                                {editingBook && editingBook.id === book.id ? (
-                                    <div>
-                                        {/* Editable fields */}
-                                        <h3 className="text-lg font-semibold">
-                                            <input
-                                                type="text"
-                                                value={updatedBook?.title}
-                                                onChange={(e) => handleInputChange(e, 'title')}
-                                                className="border p-2 rounded"
-                                            />
-                                        </h3>
-                                        <div className="mb-2">
-                                            <label>Author:</label>
-                                            <input
-                                                type="text"
-                                                value={updatedBook?.book.author.name}
-                                                onChange={(e) => handleInputChange(e, 'book.author.name')}
-                                                className="border p-2 rounded"
-                                            />
-                                        </div>
-                                        <div className="mb-2">
-                                            <label>Review:</label>
-                                            <textarea
-                                                value={updatedBook?.review}
-                                                onChange={(e) => handleInputChange(e, 'review')}
-                                                className="border p-2 rounded w-full"
-                                            />
-                                        </div>
-                                        <div className="mb-2">
-                                            <label>Rating:</label>
-                                            <input
-                                                type="number"
-                                                value={updatedBook?.rating}
-                                                onChange={(e) => handleInputChange(e, 'rating')}
-                                                className="border p-2 rounded"
-                                            />
-                                        </div>
-                                        <div className="mb-2">
-                                            <label>Status:</label>
-                                            <input
-                                                type="text"
-                                                value={updatedBook?.reading_status}
-                                                onChange={(e) => handleInputChange(e, 'reading_status')}
-                                                className="border p-2 rounded"
-                                            />
-                                        </div>
-                                        <button
-                                            onClick={handleSaveClick}
-                                            className="bg-green-500 text-white py-2 px-4 rounded"
-                                        >
-                                            Save
-                                        </button>
-                                        <button
-                                            onClick={handleCancelClick}
-                                            className="bg-red-500 text-white py-2 px-4 rounded ml-2"
-                                        >
-                                            Cancel
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <div>
-                                        <h3 className="text-lg font-semibold">{book.title}</h3>
-                                        <img src={book.book.cover_image} alt={book.title} className="w-20 h-20 rounded-md" />
-                                        <p><strong>Author:</strong> {book.book.author.name}</p>
-                                        <p><strong>Review:</strong> {book.review}</p>
-                                        <p><strong>Rating:</strong> {book.rating}/10</p>
-                                        <p><strong>Status:</strong> {book.reading_status}</p>
-                                        <p><strong>Created At:</strong> {book.created_at}</p>
-                                        <p><strong>Updated At:</strong> {book.updated_at}</p>
-                                        <button
-                                            onClick={() => handleEditClick(book)}
-                                            className="text-blue-500 mt-2"
-                                        >
-                                            Edit
-                                        </button>
-                                    </div>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
-                )}
+            <h1 className="text-3xl font-bold mb-4">Mes Livres</h1>
+
+            {error && <p className="text-red-500">{error}</p>}
+
+            <button
+                onClick={() => setShowForm(true)}
+                className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg mt-4"
+            >
+                Nouveau Livre
+            </button>
+
+            {showForm && (
+                <div className="w-full max-w-lg bg-white p-6 rounded-lg shadow-md mt-4">
+                    <h2 className="text-xl font-semibold mb-4">Créer un Nouveau Livre</h2>
+
+                    <div className="mb-4">
+                        <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+                            Titre du Livre
+                        </label>
+                        <input
+                            type="text"
+                            id="title"
+                            name="title"
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                            value={bookData.title}
+                            onChange={(e) => handleInputChange(e, 'title')}
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                            Description
+                        </label>
+                        <textarea
+                            id="description"
+                            name="description"
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                            value={bookData.description}
+                            onChange={(e) => handleInputChange(e, 'description')}
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <label htmlFor="cover_image" className="block text-sm font-medium text-gray-700">
+                            Image de Couverture
+                        </label>
+                        <input
+                            type="file"
+                            id="cover_image"
+                            name="cover_image"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <label htmlFor="author" className="block text-sm font-medium text-gray-700">
+                            Sélectionner un Auteur
+                        </label>
+                        <select
+                            id="author"
+                            name="author"
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                            onChange={handleAuthorChange}
+                        >
+                            <option value="">Sélectionner un Auteur</option>
+                            {authors.map((author) => (
+                                <option key={author.id} value={author.id}>
+                                    {author.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="mb-4">
+                        <label htmlFor="review" className="block text-sm font-medium text-gray-700">
+                            Revue
+                        </label>
+                        <textarea
+                            id="review"
+                            name="review"
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                            value={review}
+                            onChange={(e) => setReview(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <label htmlFor="rating" className="block text-sm font-medium text-gray-700">
+                            Note
+                        </label>
+                        <input
+                            type="number"
+                            id="rating"
+                            name="rating"
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                            value={rating}
+                            onChange={(e) => setRating(parseInt(e.target.value))}
+                            min="1"
+                            max="10"
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <label htmlFor="readingStatus" className="block text-sm font-medium text-gray-700">
+                            Statut de Lecture
+                        </label>
+                        <select
+                            id="readingStatus"
+                            name="readingStatus"
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                            value={readingStatus}
+                            onChange={(e) => setReadingStatus(e.target.value)}
+                        >
+                            <option value="L">Lu</option>
+                            <option value="E">En cours</option>
+                            <option value="A">À lire</option>
+                        </select>
+                    </div>
+
+                    <button
+                        onClick={handleCreateBook}
+                        className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg mt-4"
+                    >
+                        Créer le Livre
+                    </button>
+                </div>
+            )}
+
+            <div className="w-full max-w-lg bg-white p-6 rounded-lg shadow-md mt-4">
+                <h2 className="text-xl font-semibold mb-4">Mes Livres</h2>
+                {/* Display user's books here */}
+                {userBooks.map((book) => (
+                    <div key={book.id}>
+                        <h3>{book.book.title}</h3>
+                        <p>{book.book.description}</p>
+                        <p>Auteur: {book.author.name}</p>
+                        <img src={book.book.cover_image} alt={`Couverture de ${book.book.title}`} />
+                    </div>
+                ))}
             </div>
         </div>
     );

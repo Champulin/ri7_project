@@ -1,12 +1,34 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
+function getAccessToken() {
+    const accessToken = localStorage.getItem('access_token') || localStorage.getItem('token');
+    if (!accessToken) {
+        throw new Error('Aucun jeton d\'accès trouvé');
+    }
+    return accessToken;
+}
 export async function fetchFromApi(endpoint: string, options = {}) {
     const url = `${BASE_URL}${endpoint}`;
-    const response = await fetch(url, options);
+    const accessToken = getAccessToken();
+
+    const defaultHeaders = {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json'
+    };
+
+    const mergedOptions = {
+        ...options,
+        headers: {
+            ...defaultHeaders,
+            ...(options as { headers?: Record<string, string> }).headers
+        }
+    };
+
+    const response = await fetch(url, mergedOptions);
 
     if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.detail || 'Something went wrong');
+        throw new Error(error.detail || 'Quelque chose s\'est mal passé');
     }
 
     return response.json();
@@ -26,7 +48,7 @@ export const loginUser = async (email: string, password: string) => {
 
     if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || 'Login failed');
+        throw new Error(errorData.detail || 'Échec de la connexion');
     }
 
     return response.json(); // Returns { access, refresh }
@@ -35,12 +57,7 @@ export const loginUser = async (email: string, password: string) => {
 // Fetch user data using the access token
 // apioperations.tsx
 export async function fetchUserData(userId: number) {
-    // Get the token from localStorage (or wherever it's stored)
-    const accessToken = localStorage.getItem('access_token');
-
-    if (!accessToken) {
-        throw new Error('No access token found');
-    }
+    const accessToken = getAccessToken();
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/users/profile/${userId}/`;  // Correct URL construction
 
@@ -54,7 +71,7 @@ export async function fetchUserData(userId: number) {
 
     if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || 'Failed to fetch user data');
+        throw new Error(errorData.detail || 'Échec de la récupération des données utilisateur');
     }
 
     return response.json();
@@ -62,11 +79,7 @@ export async function fetchUserData(userId: number) {
 
 
 export async function updateUserData(userId: number, formData: any) {
-    const accessToken = localStorage.getItem('access_token');  // Get the access token from localStorage
-
-    if (!accessToken) {
-        throw new Error('No access token found');
-    }
+    const accessToken = getAccessToken();
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/users/profile/update/${userId}/`;  // Correct URL construction
 
@@ -106,51 +119,21 @@ export async function updateUserData(userId: number, formData: any) {
 
     if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || 'Failed to update profile');
+        throw new Error(errorData.detail || 'Échec de la mise à jour du profil');
     }
 
     return response.json();  // Return the updated user data
 }
-// apioperations.tsx
-
-export async function fetchUserBooks() {
-    // Get the token from localStorage (or wherever it's stored)
-    const accessToken = localStorage.getItem('access_token');
-
-    if (!accessToken) {
-        throw new Error('No access token found');
-    }
-
-    const url = `${process.env.NEXT_PUBLIC_API_URL}/user/books/`;  // The endpoint for user books
-
-    const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`,  // Add the Bearer token to the headers
-        },
-    });
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Failed to fetch user books');
-    }
-    return response.json();  // Returns the list of user books
+export interface Author {
+    id: number;
+    name: string;
+    bio: string;
+    profile_pic: string;
+    created_at: string;
+    updated_at: string;
 }
-
-export const updateUserBook = async (bookId: number, updatedBookData: any) => {
-    const response = await fetch(`/api/v1/user-books/${bookId}/`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: JSON.stringify(updatedBookData),
-    });
-
-    if (!response.ok) {
-        throw new Error('Failed to update the book');
-    }
-
-    return await response.json();
-};
+export async function fetchAuthors(): Promise<Author[]> {
+    const response = await fetchFromApi('/authors/');
+    console.log(response);
+    return response;
+}
