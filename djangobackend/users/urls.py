@@ -1,6 +1,6 @@
 # users/urls.py
 from django.urls import path
-from .views import UserProfileView, UserUpdateView
+from .views import UserProfileView, UserUpdateView, UserCreateView
 
 urlpatterns = [
     # URL for fetching user profile by user_id
@@ -8,4 +8,7 @@ urlpatterns = [
     
     # URL for updating user data
     path('profile/update/<int:user_id>/', UserUpdateView.as_view(), name='user-update'),
+    
+    # URL for creating a new user
+    path('profile/create/', UserCreateView.as_view(), name='user-create'),
 ]

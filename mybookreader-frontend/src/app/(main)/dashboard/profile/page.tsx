@@ -16,40 +16,36 @@ const ProfilePage = () => {
         first_name: '',
         last_name: '',
         about: '',
-        profile_pic: '',  // This will store the image URL or file
+        profile_pic: null as File | null,  // This will store the image file
     });
     const [error, setError] = useState<string>('');  // For error handling
     const [successMessage, setSuccessMessage] = useState<string>('');  // For success message
     const [imagePreview, setImagePreview] = useState<string | null>('');  // For previewing the image
     const router = useRouter();
 
-    useEffect(() => {
-        const fetchProfileData = async () => {
-            if (user && user.id) {
-                try {
-                    const data = await fetchUserData(user.id);
-                    setUserData(data);
+    const fetchProfileData = async () => {
+        if (user && user.id) {
+            try {
+                const data = await fetchUserData(user.id);
+                setUserData(data);
 
-                    const profilePicUrl = data.profile_pic
-                        ? `${process.env.NEXT_PUBLIC_BASE_URL}${data.profile_pic}`  // Ensure it's a full URL
-                        : ''; // Empty string if no profile picture
+                setFormData({
+                    username: data.username,
+                    email: data.email,
+                    first_name: data.first_name,
+                    last_name: data.last_name,
+                    about: data.about || '',
+                    profile_pic: null,  // Reset profile_pic to null as it should be a file
+                });
 
-                    setFormData({
-                        username: data.username,
-                        email: data.email,
-                        first_name: data.first_name,
-                        last_name: data.last_name,
-                        about: data.about || '',
-                        profile_pic: profilePicUrl,
-                    });
-
-                } catch (error) {
-                    console.error('Error fetching user data:', error);
-                    setError('Error fetching profile data');
-                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                setError('Error fetching profile data');
             }
-        };
+        }
+    };
 
+    useEffect(() => {
         fetchProfileData();
     }, [user]);  // Run when `user` changes
 
@@ -64,6 +60,7 @@ const ProfilePage = () => {
             await updateUserData(user.id, formData);
             setSuccessMessage('Profile updated successfully');
             setIsEditing(false);  // Exit edit mode after successful update
+            fetchProfileData();  // Refresh the fields after user has been edited
         } catch (error) {
             setError('Failed to update profile, please try again');
         }
@@ -78,9 +75,9 @@ const ProfilePage = () => {
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]; // Get the selected file
         if (file) {
-            // Update the preview and the formData
-            setImagePreview(URL.createObjectURL(file));  // Preview the image
-            setFormData({ ...formData, profile_pic: URL.createObjectURL(file) });  // Update the formData with the selected file as a URL
+            // Update the preview and store the file itself in formData
+            setImagePreview(URL.createObjectURL(file)); // Preview the image
+            setFormData({ ...formData, profile_pic: file }); // Store the actual file object
         }
     };
 
@@ -94,13 +91,13 @@ const ProfilePage = () => {
     }
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center">
-            <h1 className="text-3xl font-bold mb-4">Your Profile</h1>
+        <div className="min-h-screen flex flex-col items-center justify-center text-primary font-poppins">
+            <h1 className="text-formideo-white font-poppins text-3xl font-bold">Votre Profil</h1>
 
-            <div className="w-full max-w-lg bg-white p-6 rounded-lg shadow-md">
+            <div className="w-full max-w-lg p-6 rounded-lg shadow-md bg-formideo-custom-gradient">
                 <h2 className="text-xl font-semibold mb-4">Profile Information</h2>
                 {error && <p className="text-red-500">{error}</p>}
-                {successMessage && <p className="text-green-500">{successMessage}</p>}
+                {successMessage && <p className="text-tertiary">{successMessage}</p>}
 
                 {/* Display form or static content based on isEditing */}
                 {!isEditing ? (
@@ -115,7 +112,7 @@ const ProfilePage = () => {
                                 <strong>Profile Picture:</strong>
                                 {/* Display the profile picture */}
                                 <img
-                                    src={formData.profile_pic} // Full URL passed here
+                                    src={`${process.env.NEXT_PUBLIC_BASE_URL}${userData.profile_pic}`} // Full URL passed here
                                     height={100}
                                     width={100}
                                     alt="Profile Pic"

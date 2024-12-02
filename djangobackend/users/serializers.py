@@ -3,13 +3,21 @@
 from rest_framework import serializers
 from .models import NewUser
 
+from rest_framework import serializers
+from users.models import NewUser
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = NewUser
-        fields = ['email', 'username', 'first_name', 'last_name', 'about', 'profile_pic', 'is_active', 'is_staff']  # Include all fields you want to update
+        fields = ['username', 'email', 'password', 'first_name', 'last_name', 'about', 'profile_pic']
+        extra_kwargs = {
+            'password': {'write_only': True},  # Ensure password is not returned in responses
+        }
 
-    def update(self, instance, validated_data):
-        profile_pic = validated_data.pop('profile_pic', None)
-        if profile_pic:
-            instance.profile_pic = profile_pic  # If profile_pic is provided, save it
-        return super().update(instance, validated_data)
+    def create(self, validated_data):
+        # Use set_password to hash the password
+        password = validated_data.pop('password')
+        user = NewUser(**validated_data)
+        user.set_password(password)  # Hash the password
+        user.save()
+        return user

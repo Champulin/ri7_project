@@ -3,6 +3,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AuthContext from '../../context/AuthContext';
+import Link from 'next/link';
 
 const LoginPage = () => {
     const { user, login, loading } = useContext(AuthContext);
@@ -55,6 +56,7 @@ const LoginPage = () => {
                 <button type="submit" className="w-full bg-blue-500 text-white py-2">
                     Login
                 </button>
+                <span > Vous n'avez pas de compte ? </span> <Link href="/signup">Créez un compte</Link>
             </form>
         </div>
     );

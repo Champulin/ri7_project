@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.parsers import MultiPartParser, FormParser  # Make sure parsers are imported
 from rest_framework.parsers import JSONParser
 from rest_framework import status
@@ -35,12 +35,14 @@ class UserUpdateView(APIView):
     def patch(self, request, user_id):
         try:
             user = NewUser.objects.get(id=user_id)
-        except NewUser.DoesNotExist:
-            return Response({"detail": "User not found."}, status=404)
+        except NewUser.DoesNotExist as e:
+            print(f"Erreur de débogage: {str(e)}")  # Debug error
+            return Response({"detail": "Utilisateur non trouvé."}, status=404)
 
         # Ensure the user is updating their own profile
         if user != request.user:
-            return Response({"detail": "You are not allowed to edit this user's data."}, status=403)
+            print("Erreur de débogage: L'utilisateur n'est pas autorisé à modifier ces données.")  # Debug error
+            return Response({"detail": "Vous n'êtes pas autorisé à modifier les données de cet utilisateur."}, status=403)
 
         # Use serializer to update user data
         serializer = UserSerializer(user, data=request.data, partial=True)
@@ -50,4 +52,25 @@ class UserUpdateView(APIView):
                 user.profile_pic = request.FILES['profile_pic']
             serializer.save()  # Save the updated user data
             return Response(serializer.data, status=200)
+        else:
+            print(f"Erreur de débogage: {serializer.errors}")  # Debug error
         return Response(serializer.errors, status=400)
+class UserCreateView(APIView):
+    permission_classes = [AllowAny]  # Allow any user to create a new account
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({
+                "id": user.id,
+                "email": user.email,
+                "username": user.username,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "about": user.about,
+                "profile_pic": user.profile_pic.url if user.profile_pic else None,
+            }, status=201)
+        else:
+            print(f"Erreur de débogage: {serializer.errors}")  # Debug error
+            return Response(serializer.errors, status=400)

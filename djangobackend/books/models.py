@@ -48,7 +48,6 @@ class Book(models.Model):
         self._previous_rating = None  # Initialize the previous rating variable
         self.update_rating()  # Ensure the rating is calculated before saving
         super().save(*args, **kwargs)
-
 class Review(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     user = models.ForeignKey(NewUser, on_delete=models.CASCADE)
@@ -57,6 +56,9 @@ class Review(models.Model):
     reading_status = models.CharField(max_length=1, choices=[('L', 'Lu'), ('E', 'En cours'), ('A', 'À lire')], default='A')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('book', 'user')
 
     def __str__(self):
         return f'{self.user.username} - {self.book.title}'

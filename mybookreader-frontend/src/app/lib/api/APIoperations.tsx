@@ -33,7 +33,28 @@ export async function fetchFromApi(endpoint: string, options = {}) {
 
     return response.json();
 }
+export const createUser = async (email: string, password: string, username: string, firstName: string, lastName: string, about: string, profilePic: File) => {
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('password', password);
+    formData.append('username', username);
+    formData.append('first_name', firstName);
+    formData.append('last_name', lastName);
+    formData.append('about', about);
+    formData.append('profile_pic', profilePic);
 
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/profile/create/`, {
+        method: 'POST',
+        body: formData,
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Échec de la création de l\'utilisateur');
+    }
+
+    return response.json();
+}
 export const loginUser = async (email: string, password: string) => {
     console.log('loginUser called'); // Debugging if the function is being called
     console.log('API URL:', process.env.NEXT_PUBLIC_API_URL); // Debugging
@@ -134,6 +155,77 @@ export interface Author {
 }
 export async function fetchAuthors(): Promise<Author[]> {
     const response = await fetchFromApi('/authors/');
-    console.log(response);
     return response;
 }
+
+export async function fetchAuthor(authorId: number): Promise<Author> {
+    const response = await fetchFromApi(`/authors/${authorId}/`);
+    return response;
+}
+export enum ReadingStatus {
+    Lu = 'L',
+    EnCours = 'E',
+    ALire = 'A'
+}
+export interface Review {
+    id: number;
+    book: number;
+    user: number;
+    review: string;
+    rating: number;
+    reading_status: ReadingStatus;
+    created_at: string;
+    updated_at: string;
+}
+export async function fetchReviews(): Promise<Review[]> {
+    const response = await fetchFromApi('/reviews/');
+    return response;
+}
+export async function fetchReview(reviewId: number): Promise<Review> {
+    const response = await fetchFromApi(`/reviews/${reviewId}/`);
+    return response;
+}
+export async function createReview(review: Review): Promise<Review> {
+    const token = getAccessToken();
+    console.log('token', token);
+    const response = await fetchFromApi('/reviews/', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(review),
+    });
+    return response;
+}
+export async function deleteReview(reviewId: number): Promise<void> {
+    await fetchFromApi(`/reviews/${reviewId}/`, { method: 'DELETE' });
+}
+export async function updateReview(reviewId: number, review: Review): Promise<Review> {
+    const token = getAccessToken();
+    const response = await fetchFromApi(`/reviews/${reviewId}/`, {
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(review),
+    });
+    return response;
+}
+export interface Book {
+    id: number;
+    author: number;
+    title: string;
+    description: string;
+    cover_image: string;
+}
+export async function fetchBooks(): Promise<Book[]> {
+    const response = await fetchFromApi('/books/');
+    return response;
+}
+export async function fetchBook(bookId: number): Promise<Book> {
+    const response = await fetchFromApi(`/books/${bookId}/`);
+    return response;
+}
+

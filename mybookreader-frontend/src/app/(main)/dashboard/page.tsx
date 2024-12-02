@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import AuthContext from '../../context/AuthContext';
 import { fetchAuthors } from '@/app/lib/api/APIoperations';
 
-const DashboardPage = async () => {
+const DashboardPage = () => {
     const { user, loading } = useContext(AuthContext);
     const router = useRouter();
 

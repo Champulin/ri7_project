@@ -1,7 +1,7 @@
 
 import { AuthProvider } from './context/AuthContext';
 import './styles/globals.css';
-
+import { poppins, sofia } from './styles/fonts';
 export default function RootLayout({
   children,
 }: {
@@ -10,7 +10,9 @@ export default function RootLayout({
   return (
     <AuthProvider>
       <html lang="en">
-        <body className='bg-slate-500' >{children}</body>
+        <body
+          className={`${poppins.variable} ${sofia.variable} bg-primary max-w-[1440px] min-w-[375px] m-auto`}
+        >{children}</body>
       </html>
     </AuthProvider>
   );
