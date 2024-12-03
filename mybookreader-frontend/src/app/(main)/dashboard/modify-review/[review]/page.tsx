@@ -72,7 +72,7 @@ const ModifyReviewPage = () => {
     return (
         <div className="flex flex-col items-center justify-center text-primary font-poppins">
             <h1 className='text-formideo-white font-poppins text-3xl font-bold'>Modifier l'Avis</h1>
-            <form onSubmit={handleSubmit} className="p-4 bg-formideo-custom-gradient rounded-lg shadow-md w-1/2">
+            <form onSubmit={handleSubmit} className="p-4 bg-gradient-card rounded-lg shadow-md w-1/2">
                 <div className='flex flex-row gap-4'>
                     <div className='w-1/2'>
                         <img src={book?.cover_image} alt={book?.title} className="w-full h-auto" />
@@ -83,7 +83,7 @@ const ModifyReviewPage = () => {
                         <div className='flex flex-row items-center'>
                             <p className='w-1/4 '>Note</p>
                             <select
-                                className="w-3/4 border p-2 rounded mb-4"
+                                className="w-3/4 border rounded h-[30px]"
                                 value={rating}
                                 onChange={(e) => setRating(Number(e.target.value))}
                             >
@@ -110,7 +110,7 @@ const ModifyReviewPage = () => {
                     value={newReview}
                     onChange={(e) => setNewReview(e.target.value)}
                 ></textarea>
-                <button type="submit" className="bg-tertiary text-formideo-white font-poppins font-semibold px-4 py-2 rounded-md">
+                <button type="submit" className="bg-formideo-custom-gradient text-formideo-white font-poppins font-semibold px-4 py-2 rounded-md">
                     Modifier l'Avis
                 </button>
             </form>

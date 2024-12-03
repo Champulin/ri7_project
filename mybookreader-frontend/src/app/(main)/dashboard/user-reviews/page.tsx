@@ -46,19 +46,20 @@ const UserReviewsPage = () => {
     if (loading) {
         return <p>Chargement...</p>;
     }
-
+    const titleStyle = "text-base font-semibold";
+    const spanStyle = "font-normal";
     return (
         <div className="text-formideo-white font-poppins flex flex-col items-center justify-center">
             <h1 className="text-3xl font-bold mb-4">Mes Avis</h1>
             {reviews.length === 0 ? (
                 <p>Aucun avis trouvé.</p>
             ) : (
-                <ul className="w-full p-4 grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-4">
+                <ul className="w-full p-4 grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-4 ">
                     {reviews.map((review) => {
                         const book = books[review.book];
                         const author = book ? authors[book.author] : null;
                         return (
-                            <li key={review.id} className="border rounded-lg shadow-md">
+                            <li key={review.id} className="border rounded-lg shadow-md bg-gradient-card">
                                 {book && (
                                     <div className='flex flex-col gap-x-4'>
                                         <div className='flex flex-row gap-x-4'>
@@ -67,22 +68,22 @@ const UserReviewsPage = () => {
                                                 <img src={book.cover_image} alt={book.title} className="w-full h-auto" />
                                             </div>
                                             <div className='w-1/2 p-2 space-y-2'>
-                                                <h2>{book.title}</h2>
-                                                {author && <p>{author.name}</p>}
-                                                <p>Avis: {review.review}</p>
-                                                <p>Note: {review.rating}</p>
-                                                <p>Statut de lecture: {review.reading_status === 'A' ? 'À lire' : review.reading_status === 'E' ? 'En cours' : 'Lu'}</p>
+                                                <h2 className={titleStyle}>Titre: <span className={spanStyle}>{book.title}</span></h2>
+                                                {author && <p className={titleStyle}>Auteur: <span className={spanStyle}>{author.name}</span></p>}
+                                                <p className={titleStyle}>Avis: <span className={spanStyle}>{review.review}</span></p>
+                                                <p className={titleStyle}>Note: <span className={spanStyle}>{review.rating}</span></p>
+                                                <p className={titleStyle}>Statut de lecture: <span className={spanStyle}>{review.reading_status === 'A' ? 'À lire' : review.reading_status === 'E' ? 'En cours' : 'Lu'}</span></p>
                                                 <div className='flex flex-row hidden lg:flex'>
-                                                    <p>Créé le: {new Date(review.created_at).toLocaleDateString('fr-FR')}</p>
-                                                    <p>Mis à jour le: {new Date(review.updated_at).toLocaleDateString('fr-FR')}</p>
+                                                    <p className='text-xs'>Créé le: <span className="font-normal">{new Date(review.created_at).toLocaleDateString('fr-FR')}</span></p>
+                                                    <p className='text-xs'>Mis à jour le: <span className="font-normal">{new Date(review.updated_at).toLocaleDateString('fr-FR')}</span></p>
                                                 </div>
-                                                <button onClick={() => router.push(`modify-review/${review.id}`)} className="bg-blue-500 text-white px-4 py-2 rounded-lg hidden lg:flex">Modifier</button>
+                                                <button onClick={() => router.push(`modify-review/${review.id}`)} className="bg-formideo-custom-gradient text-formideo-white font-poppins font-semibold px-4 py-2 rounded-md hidden lg:flex">Modifier</button>
                                             </div>
                                         </div>
                                         <div className='mx-auto px-4 py-2 lg:hidden'>
-                                            <div className='flex flex-row'>
-                                                <p>Créé le: {new Date(review.created_at).toLocaleDateString('fr-FR')}</p>
-                                                <p>Mis à jour le: {new Date(review.updated_at).toLocaleDateString('fr-FR')}</p>
+                                            <div className='flex flex-row gap-x-4'>
+                                                <p className='text-xs'>Créé le: {new Date(review.created_at).toLocaleDateString('fr-FR')}</p>
+                                                <p className='text-xs'>Mis à jour le: {new Date(review.updated_at).toLocaleDateString('fr-FR')}</p>
                                             </div>
                                             <button onClick={() => router.push(`modify-review/${review.id}`)} className="bg-blue-500 text-white px-4 py-2 rounded-lg">Modifier</button>
                                         </div>

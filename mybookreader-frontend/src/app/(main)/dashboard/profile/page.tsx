@@ -58,9 +58,14 @@ const ProfilePage = () => {
         try {
             // If there's a new profile pic, send it along with other form data
             await updateUserData(user.id, formData);
-            setSuccessMessage('Profile updated successfully');
+            setSuccessMessage('Profil mis à jour avec succès');
             setIsEditing(false);  // Exit edit mode after successful update
             fetchProfileData();  // Refresh the fields after user has been edited
+
+            // Set a timeout to clear the success message after 5 seconds
+            setTimeout(() => {
+                setSuccessMessage('');
+            }, 5000);
         } catch (error) {
             setError('Failed to update profile, please try again');
         }

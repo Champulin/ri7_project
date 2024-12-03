@@ -82,7 +82,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             </div>
 
             {/* Sidebar for larger screens */}
-            <aside className="navbar-large hidden md:flex">
+            <aside className="navbar-large hidden md:flex font-poppins p-4">
                 <ul className="flex flex-row space-x-4 text-lg mx-auto">
                     <li>
                         <Link href="/dashboard">Dashboard</Link>

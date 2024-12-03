@@ -215,6 +215,7 @@ export async function updateReview(reviewId: number, review: Review): Promise<Re
 }
 export interface Book {
     id: number;
+    rating: number;
     author: number;
     title: string;
     description: string;
