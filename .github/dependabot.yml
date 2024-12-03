@@ -1,0 +1,6 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/mybookreader-frontend" # Path to the frontend project
+    schedule:
+      interval: "weekly" # Weekly updates

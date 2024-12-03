@@ -1,6 +1,0 @@
-version: 2
-updates:
-  - package-ecosystem: "npm"
-    directory: "/" # Root directory of your project
-    schedule:
-      interval: "weekly" # Checks dependencies weekly
