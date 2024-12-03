@@ -25,10 +25,15 @@ const LoginPage = () => {
             await login(email, password);
             console.log('Login successful');
             router.push('/dashboard'); // Redirect after successful login
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err) {
+            if (err instanceof Error) {
+                setError(err.message); // Use err.message if it's an Error object
+            } else {
+                setError('An unknown error occurred'); // Fallback for unexpected errors
+            }
         }
     };
+
 
     if (loading) {
         return <p>Loading...</p>; // Wait for AuthContext initialization
@@ -56,7 +61,8 @@ const LoginPage = () => {
                 <button type="submit" className="w-full bg-blue-500 text-white py-2">
                     Login
                 </button>
-                <span > Vous n'avez pas de compte ? </span> <Link href="/signup">Créez un compte</Link>
+                <span> Vous n&apos;avez pas de compte ? </span>
+                <Link href="/signup">Créez un compte</Link>
             </form>
         </div>
     );

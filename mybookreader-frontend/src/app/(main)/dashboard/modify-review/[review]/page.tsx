@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { fetchReview, fetchBook, fetchAuthor, updateReview, Review, Book, Author, ReadingStatus } from '@/app/lib/api/APIoperations';
+import Image from 'next/image';
 
 const ModifyReviewPage = () => {
     const router = useRouter();
@@ -31,7 +32,11 @@ const ModifyReviewPage = () => {
                 const authorData = await fetchAuthor(bookData.author);
                 setAuthor(authorData);
             } catch (error) {
-                console.error('Erreur lors de la récupération de l\'avis:', error);
+                if (error instanceof Error) {
+                    console.error('Erreur lors de la récupération de l&apos;avis:', error.message);
+                } else {
+                    console.error('Une erreur inconnue est survenue');
+                }
             } finally {
                 setLoading(false);
             }
@@ -44,7 +49,7 @@ const ModifyReviewPage = () => {
         e.preventDefault();
 
         if (!reviewData) {
-            alert('Données d\'avis invalides');
+            alert('Données d&apos;avis invalides');
             return;
         }
 
@@ -60,8 +65,13 @@ const ModifyReviewPage = () => {
             alert('Avis modifié avec succès!');
             router.push('/dashboard/user-reviews'); // Rediriger vers la page des avis utilisateur après la soumission
         } catch (error) {
-            console.error('Erreur lors de la modification de l\'avis:', error);
-            alert('Échec de la modification de l\'avis.');
+            if (error instanceof Error) {
+                console.error('Erreur lors de la modification de l&apos;avis:', error.message);
+                alert(`Échec de la modification de l'avis: ${error.message}`);
+            } else {
+                console.error('Une erreur inconnue est survenue');
+                alert('Une erreur inconnue est survenue');
+            }
         }
     };
 
@@ -71,17 +81,21 @@ const ModifyReviewPage = () => {
 
     return (
         <div className="flex flex-col items-center justify-center text-primary font-poppins">
-            <h1 className='text-formideo-white font-poppins text-3xl font-bold'>Modifier l'Avis</h1>
+            <h1 className="text-formideo-white font-poppins text-3xl font-bold">
+                Modifier l&apos;Avis
+            </h1>
             <form onSubmit={handleSubmit} className="p-4 bg-gradient-card rounded-lg shadow-md w-1/2">
-                <div className='flex flex-row gap-4'>
-                    <div className='w-1/2'>
-                        <img src={book?.cover_image} alt={book?.title} className="w-full h-auto" />
+                <div className="flex flex-row gap-4">
+                    <div className="w-1/2">
+                        {book && (
+                            <Image src={book.cover_image} width={100} height={100} alt={book.title} className="w-full h-auto" />
+                        )}
                     </div>
-                    <div className='w-1/2 font-bold flex flex-col gap-2'>
-                        <h2 className='text-base'>Titre : <span className='font-normal'>{book?.title}</span></h2>
-                        <p className='text-base'>Auteur : <span className='font-normal'>{author?.name}</span></p>
-                        <div className='flex flex-row items-center'>
-                            <p className='w-1/4 '>Note</p>
+                    <div className="w-1/2 font-bold flex flex-col gap-2">
+                        <h2 className="text-base">Titre : <span className="font-normal">{book?.title}</span></h2>
+                        <p className="text-base">Auteur : <span className="font-normal">{author?.name}</span></p>
+                        <div className="flex flex-row items-center">
+                            <p className="w-1/4">Note</p>
                             <select
                                 className="w-3/4 border rounded h-[30px]"
                                 value={rating}
@@ -94,9 +108,13 @@ const ModifyReviewPage = () => {
                                 ))}
                             </select>
                         </div>
-                        <div className='flex flex-row'>
-                            <p className='w-2/5'>Statut de lecture</p>
-                            <select className='w-3/5 h-[30px]' value={readingStatus} onChange={(e) => setReadingStatus(e.target.value as ReadingStatus)}>
+                        <div className="flex flex-row">
+                            <p className="w-2/5">Statut de lecture</p>
+                            <select
+                                className="w-3/5 h-[30px]"
+                                value={readingStatus}
+                                onChange={(e) => setReadingStatus(e.target.value as ReadingStatus)}
+                            >
                                 <option value={ReadingStatus.ALire}>À lire</option>
                                 <option value={ReadingStatus.EnCours}>En cours</option>
                                 <option value={ReadingStatus.Lu}>Lu</option>
@@ -110,8 +128,11 @@ const ModifyReviewPage = () => {
                     value={newReview}
                     onChange={(e) => setNewReview(e.target.value)}
                 ></textarea>
-                <button type="submit" className="bg-formideo-custom-gradient text-formideo-white font-poppins font-semibold px-4 py-2 rounded-md">
-                    Modifier l'Avis
+                <button
+                    type="submit"
+                    className="bg-formideo-custom-gradient text-formideo-white font-poppins font-semibold px-4 py-2 rounded-md"
+                >
+                    Modifier l&apos;Avis
                 </button>
             </form>
         </div>

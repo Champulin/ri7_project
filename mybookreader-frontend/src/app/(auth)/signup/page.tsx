@@ -37,10 +37,15 @@ const SignupPage = () => {
             await createUser(email, password, username, firstName, lastName, bio, profilePic as File);
             console.log('Utilisateur créé avec succès');
             router.push('/login'); // Redirect after successful signup
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err) {
+            if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError('Une erreur inconnue est survenue');
+            }
         }
     };
+
 
     return (
         <div className="min-h-screen flex items-center justify-center">
@@ -101,8 +106,9 @@ const SignupPage = () => {
                     className="w-full mb-4 p-2 border"
                 />
                 <button type="submit" className="w-full bg-blue-500 text-white py-2">
-                    S'inscrire
+                    S&apos;inscrire
                 </button>
+
             </form>
         </div>
     );

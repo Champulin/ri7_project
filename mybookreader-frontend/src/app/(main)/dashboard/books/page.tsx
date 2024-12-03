@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Author, Book, fetchAuthor, fetchBooks } from '@/app/lib/api/APIoperations';
 import AuthContext from '@/app/context/AuthContext';
+import Image from 'next/image';
 
 const MyBooks = () => {
     const { user, loading } = useContext(AuthContext);
@@ -35,6 +36,9 @@ const MyBooks = () => {
         }
         router.push(`/dashboard/review-form?bookId=${bookId}&userId=${user.id}`);
     };
+    if (loading) {
+        return <div>Loading...</div>;
+    }
     const titleStyle = "text-base font-semibold";
     const spanStyle = "font-normal";
     return (
@@ -44,7 +48,7 @@ const MyBooks = () => {
                 {booksWithAuthors.map((book) => (
                     <div key={book.id} className="flex flex-row p-2 border-b-2 border-gray-200">
                         <div className="w-1/3 flex items-center justify-center">
-                            <img src={book.cover_image} alt={book.title} className="size-20" />
+                            <Image src={book.cover_image} width={100} height={100} alt={book.title} className="size-20" />
                         </div>
                         <div className="w-2/3">
                             <div className={titleStyle}>Titre: <span className={spanStyle}>{book.title}</span></div>

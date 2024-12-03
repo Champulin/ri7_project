@@ -4,6 +4,7 @@ import { useEffect, useState, useContext } from 'react';
 import { useRouter } from 'next/navigation';
 import { fetchReviews, fetchBook, fetchAuthor, Review, Book, Author } from '@/app/lib/api/APIoperations';
 import AuthContext from '@/app/context/AuthContext';
+import Image from 'next/image';
 
 const UserReviewsPage = () => {
     const [reviews, setReviews] = useState<Review[]>([]);
@@ -65,7 +66,10 @@ const UserReviewsPage = () => {
                                         <div className='flex flex-row gap-x-4'>
 
                                             <div className='w-1/2'>
-                                                <img src={book.cover_image} alt={book.title} className="w-full h-auto" />
+                                                <Image src={book.cover_image} alt={book.title}
+                                                    width={100}
+                                                    height={100}
+                                                    className="w-full h-auto" />
                                             </div>
                                             <div className='w-1/2 p-2 space-y-2'>
                                                 <h2 className={titleStyle}>Titre: <span className={spanStyle}>{book.title}</span></h2>

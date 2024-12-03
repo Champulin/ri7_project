@@ -3,8 +3,6 @@
 import { useContext, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import AuthContext from '../../context/AuthContext';
-import { fetchAuthors } from '@/app/lib/api/APIoperations';
-
 const DashboardPage = () => {
     const { user, loading } = useContext(AuthContext);
     const router = useRouter();

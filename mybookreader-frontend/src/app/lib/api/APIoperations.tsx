@@ -98,19 +98,27 @@ export async function fetchUserData(userId: number) {
     return response.json();
 }
 
-
-export async function updateUserData(userId: number, formData: any) {
+interface UserFormData {
+    username: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    about: string;
+    profile_pic: File | null;
+}
+export async function updateUserData(userId: number, formData: UserFormData) {
     const accessToken = getAccessToken();
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/users/profile/update/${userId}/`;  // Correct URL construction
 
     // Prepare the data as JSON, excluding profile_pic
-    const dataToSend: any = {
+    const dataToSend: UserFormData = {
         username: formData.username,
         email: formData.email,
         first_name: formData.first_name,
         last_name: formData.last_name,
         about: formData.about,
+        profile_pic: null,  // Exclude profile_pic from the JSON data
     };
 
     // Create a FormData object for multipart/form-data if profile_pic exists
