@@ -29,10 +29,10 @@ jobs:
 
       # Install dependencies
       - name: Install dependencies
-        working-directory: mybookreader-frontend
+        working-directory: ri7_project/mybookreader-frontend
         run: npm ci
 
       # Build the project
       - name: Build the project
-        working-directory: mybookreader-frontend
+        working-directory: ri7_project/mybookreader-frontend
         run: npm run build
