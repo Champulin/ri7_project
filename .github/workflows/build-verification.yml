@@ -27,12 +27,22 @@ jobs:
           node-version: 20.11.1
           cache: "npm"
 
+      # Debug current directory
+      - name: Show current directory and list files
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Root directory contents:"
+          ls -al
+          echo "mybookreader-frontend contents:"
+          ls -al mybookreader-frontend
+
       # Install dependencies
       - name: Install dependencies
-        working-directory: ri7_project/mybookreader-frontend
+        working-directory: mybookreader-frontend
         run: npm ci
 
       # Build the project
       - name: Build the project
-        working-directory: ri7_project/mybookreader-frontend
+        working-directory: mybookreader-frontend
         run: npm run build
