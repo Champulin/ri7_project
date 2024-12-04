@@ -61,19 +61,21 @@ class Command(BaseCommand):
             book_title = f"Manga {i}"
             description = f"This is the description of {book_title}."
             cover_image = f"books/book_{i}.jpg"  # Ensure images exist in media/books/
-            rating = random.randint(1, 10)
 
             # Assign a random author from the seeded authors
             author = random.choice(authors)
 
-            book, created = Book.objects.get_or_create(
+            # Skip the rating update during seeding
+            book = Book(
                 title=book_title,
                 author=author,
                 description=description,
                 cover_image=cover_image,
-                rating=rating,
             )
-            if created:
+            book._skip_rating_update = True  # Skip rating update during seeding
+            book.save()
+
+            if book.pk:
                 self.stdout.write(self.style.SUCCESS(f"Book '{book_title}' created."))
             else:
                 self.stdout.write(self.style.WARNING(f"Book '{book_title}' already exists."))

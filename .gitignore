@@ -11,7 +11,7 @@ __pycache__/
 venv/
 
 # Ignore .env file
-.env
+
 db.sqlite3
 
 # Ignore Docker-related files
@@ -28,10 +28,7 @@ out/
 *.log
 
 # Ignore local environment files
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+
 
 # Ignore miscellaneous files
 .DS_Store

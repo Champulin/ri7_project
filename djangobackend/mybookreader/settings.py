@@ -84,10 +84,11 @@ DATABASES = {
         'NAME': config('POSTGRES_DB', default='book_reviews_db'),
         'USER': config('POSTGRES_USER', default='book_user'),
         'PASSWORD': config('POSTGRES_PASSWORD', default='book_password'),
-        'HOST': config('POSTGRES_HOST', default='localhost'),
+        'HOST': config('POSTGRES_HOST', default='db'),  # Change this to 'db' to connect to the db container
         'PORT': config('POSTGRES_PORT', default='5432'),
     }
 }
+
 
 # Authentication
 AUTH_USER_MODEL = 'users.NewUser'

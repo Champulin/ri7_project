@@ -16,6 +16,9 @@ class Author(models.Model):
         return self.name
 
 # Book model
+from django.db import models
+from django.db.models import Avg
+
 class Book(models.Model):
     title = models.CharField(max_length=255)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
@@ -23,6 +26,7 @@ class Book(models.Model):
     cover_image = models.ImageField(upload_to='books/', default='books/default_book.jpg')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    rating = models.IntegerField(default=0)  # Add a rating field to store the book's average rating
 
     def __str__(self):
         return self.title
@@ -45,9 +49,12 @@ class Book(models.Model):
 
     def save(self, *args, **kwargs):
         """Override save method to update the rating before saving the book."""
-        self._previous_rating = None  # Initialize the previous rating variable
-        self.update_rating()  # Ensure the rating is calculated before saving
+        # Skip rating update if we are seeding data (prevent unnecessary computation)
+        if not getattr(self, '_skip_rating_update', False):
+            self._previous_rating = None  # Initialize the previous rating variable
+            self.update_rating()  # Ensure the rating is calculated before saving
         super().save(*args, **kwargs)
+
 class Review(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     user = models.ForeignKey(NewUser, on_delete=models.CASCADE)
