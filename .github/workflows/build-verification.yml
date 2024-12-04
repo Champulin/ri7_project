@@ -9,7 +9,7 @@ on:
   pull_request:
     paths:
       - "mybookreader-frontend/**"
-  workflow_dispatch:
+  workflow_dispatch: # Enables manual trigger
 
 jobs:
   build:
