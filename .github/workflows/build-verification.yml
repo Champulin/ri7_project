@@ -9,6 +9,7 @@ on:
   pull_request:
     paths:
       - "mybookreader-frontend/**"
+  workflow_dispatch:
 
 jobs:
   build:
