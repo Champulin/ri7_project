@@ -3,12 +3,12 @@ name: Build Verification - MyBookReader Frontend
 on:
   push:
     paths:
-      - "mybookreader-frontend/**" # Trigger only when frontend files change
+      - "ri7_project/mybookreader-frontend/**" # Trigger only when frontend files change
     branches:
       - main
   pull_request:
     paths:
-      - "mybookreader-frontend/**"
+      - "ri7_project/mybookreader-frontend/**"
   workflow_dispatch: # Enables manual trigger
 
 jobs:
@@ -38,7 +38,7 @@ jobs:
       # Install dependencies and build
       - name: Install and Build
         run: |
-          cd ri7_project/mybookreader-frontend
+          cd mybookreader-frontend
           echo "In frontend directory: $(pwd)"
           ls -al
           npm ci
