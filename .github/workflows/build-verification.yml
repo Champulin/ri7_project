@@ -20,6 +20,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Debug checkout directory
+      - name: Debug Checkout Directory
+        run: |
+          echo "Current Directory:"
+          pwd
+          echo "Contents of Current Directory:"
+          ls -al
+
       # Set up Node.js environment
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -27,22 +35,11 @@ jobs:
           node-version: 20.11.1
           cache: "npm"
 
-      # Debug current directory
-      - name: Show current directory and list files
+      # Install dependencies and build
+      - name: Install and Build
         run: |
-          echo "Current directory:"
-          pwd
-          echo "Root directory contents:"
+          cd mybookreader-frontend
+          echo "In frontend directory: $(pwd)"
           ls -al
-          echo "mybookreader-frontend contents:"
-          ls -al mybookreader-frontend
-
-      # Install dependencies
-      - name: Install dependencies
-        working-directory: mybookreader-frontend
-        run: npm ci
-
-      # Build the project
-      - name: Build the project
-        working-directory: mybookreader-frontend
-        run: npm run build
+          npm ci
+          npm run build
