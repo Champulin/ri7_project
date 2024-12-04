@@ -26,14 +26,12 @@ jobs:
           node-version: 20.11.1
           cache: "npm"
 
-      # Navigate to the frontend directory
-      - name: Navigate to frontend directory
-        run: cd mybookreader-frontend
-
       # Install dependencies
       - name: Install dependencies
+        working-directory: mybookreader-frontend
         run: npm ci
 
       # Build the project
       - name: Build the project
+        working-directory: mybookreader-frontend
         run: npm run build
