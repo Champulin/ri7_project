@@ -3,13 +3,12 @@ name: Build Verification - MyBookReader Frontend
 on:
   push:
     paths:
-      - "ri7_project/mybookreader-frontend/**" # Trigger only when frontend files change
+      - "mybookreader-frontend/**" # Trigger only when frontend files change
     branches:
       - main
   pull_request:
     paths:
-      - "ri7_project/mybookreader-frontend/**"
-  workflow_dispatch: # Enables manual trigger
+      - "mybookreader-frontend/**"
 
 jobs:
   build:
@@ -20,26 +19,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Debug checkout directory
-      - name: Debug Checkout Directory
-        run: |
-          echo "Current Directory:"
-          pwd
-          echo "Contents of Current Directory:"
-          ls -al
-
-      # Set up Node.js environment
+      # Set up Node.js environment (with working-directory set)
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20.11.1
           cache: "npm"
+          cache-dependency-path: mybookreader-frontend/package-lock.json
 
-      # Install dependencies and build
-      - name: Install and Build
-        run: |
-          cd mybookreader-frontend
-          echo "In frontend directory: $(pwd)"
-          ls -al
-          npm ci
-          npm run build
+      # Install dependencies
+      - name: Install dependencies
+        working-directory: mybookreader-frontend
+        run: npm ci
+
+      # Build the project
+      - name: Build the project
+        working-directory: mybookreader-frontend
+        run: npm run build
