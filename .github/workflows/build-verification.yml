@@ -38,7 +38,7 @@ jobs:
       # Install dependencies and build
       - name: Install and Build
         run: |
-          cd mybookreader-frontend
+          cd ri7_project/mybookreader-frontend
           echo "In frontend directory: $(pwd)"
           ls -al
           npm ci
