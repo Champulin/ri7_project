@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .  # Use the current directory as the build context
+    command: npm start  # Start the Next.js app
+    volumes:
+      - .:/src  # Mount the current directory
+    ports:
+      - "3000:3000"

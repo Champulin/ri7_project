@@ -70,24 +70,24 @@ TEMPLATES = [
 WSGI_APPLICATION = 'mybookreader.wsgi.application'
 
 # Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-# Uncomment for PostgreSQL
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': config('POSTGRES_DB', default='book_reviews_db'),
-#         'USER': config('POSTGRES_USER', default='book_user'),
-#         'PASSWORD': config('POSTGRES_PASSWORD', default='book_password'),
-#         'HOST': config('POSTGRES_HOST', default='localhost'),
-#         'PORT': config('POSTGRES_PORT', default='5432'),
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
+# Uncomment for PostgreSQL
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('POSTGRES_DB', default='book_reviews_db'),
+        'USER': config('POSTGRES_USER', default='book_user'),
+        'PASSWORD': config('POSTGRES_PASSWORD', default='book_password'),
+        'HOST': config('POSTGRES_HOST', default='localhost'),
+        'PORT': config('POSTGRES_PORT', default='5432'),
+    }
+}
 
 # Authentication
 AUTH_USER_MODEL = 'users.NewUser'
