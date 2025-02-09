@@ -45,7 +45,17 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
+    'http://localhost:3001', 
+    'http://127.0.0.1:3001',  
 ]
+# Allow credentials for authentication (JWT/cookies)
+CORS_ALLOW_CREDENTIALS = True
+
+# Allow all headers (for debugging, restrict later in production)
+CORS_ALLOW_HEADERS = ["*"]
+
+# Allow all HTTP methods (POST, GET, OPTIONS, etc.)
+CORS_ALLOW_METHODS = ["*"]
 # Root URL Configuration
 ROOT_URLCONF = 'mybookreader.urls'
 

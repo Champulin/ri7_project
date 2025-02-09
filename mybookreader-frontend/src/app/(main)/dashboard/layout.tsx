@@ -16,7 +16,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
     const togglePopover = () => setIsOpen((prev) => !prev); // Toggle popover state
 
     return (
-        <div className="dashboard-layout">
+        <div className="dashboard-layout  min-h-screen text-formideo-white">
             {/* Sidebar and Navigation */}
             <div className="md:hidden">
                 <nav className="relative text-primary font-poppins">
@@ -49,28 +49,28 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                                         <div className="space-y-4 font-bold">
                                             <div>
                                                 <Link href="/dashboard" onClick={() => setIsOpen(false)}>
-                                                    Dashboard
+                                                    Home
                                                 </Link>
                                             </div>
                                             <div>
                                                 <Link href="/dashboard/profile" onClick={() => setIsOpen(false)}>
-                                                    Profile
+                                                    Profil
                                                 </Link>
                                             </div>
                                             <div>
                                                 <Link href="/dashboard/books" onClick={() => setIsOpen(false)}>
-                                                    Book List
+                                                    Livres
                                                 </Link>
                                             </div>
                                             <div>
                                                 <Link href="/dashboard/user-reviews" onClick={() => setIsOpen(false)}>
-                                                    Reviews
+                                                    Avis
                                                 </Link>
                                             </div>
                                             <div>
                                                 <button onClick={logout} className="text-red-500">
-                                                    Log Off
-                                                </button>
+                                                    Deconnexion 
+                                                                                                    </button>
                                             </div>
                                         </div>
                                     </div>
@@ -105,7 +105,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
             </aside>
 
             {/* Main Content Area */}
-            <main className="main-content">{children}</main>
+            <main className="main-content bg-[url('/media/anime.jpg')] bg-cover bg-center min-h-screen">{children}</main>
         </div>
     );
 };

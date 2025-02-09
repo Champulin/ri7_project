@@ -3,6 +3,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AuthContext from '../../context/AuthContext';
+
 import Link from 'next/link';
 
 const LoginPage = () => {
@@ -40,9 +41,10 @@ const LoginPage = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center">
-            <form onSubmit={handleSubmit} className="w-full max-w-md">
-                <h1 className="text-xl font-bold mb-4">Login</h1>
+        <div className={`min-h-screen flex items-center justify-center bg-[url('/media/power.jpg')] `}>
+            <h1> </h1>         
+                <form onSubmit={handleSubmit} className="w-full max-w-md">
+                <h2 className="text-xl font-bold mb-4">Login</h2>
                 {error && <p className="text-red-500">{error}</p>}
                 <input
                     type="email"

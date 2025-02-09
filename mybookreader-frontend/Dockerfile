@@ -5,23 +5,26 @@ FROM node:20-slim
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Create and set the working directory inside the container
+# Create and set the working directory
 WORKDIR /app
 
-# Install dependencies first for better cache layer usage
+# Copy package files first (better cache utilization)
 COPY package.json package-lock.json ./
 
-# Install the dependencies
+# Install dependencies
 RUN npm install --frozen-lockfile
 
-# Copy the rest of the application
+# Copy the rest of the application (after dependencies are installed)
 COPY . .
 
-# Build the application (next build)
+# Ensure Tailwind and PostCSS dependencies are installed
+RUN npm install tailwindcss postcss autoprefixer --save-dev
+
+# Build the application
 RUN npm run build
 
-# Expose the default Next.js port
+# Expose Next.js default port
 EXPOSE 3000
 
-# Start the Next.js application
+# Start the application
 CMD ["npm", "start"]

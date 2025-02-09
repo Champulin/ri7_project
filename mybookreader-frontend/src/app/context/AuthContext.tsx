@@ -70,11 +70,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Login function
     const login = async (email: string, password: string) => {
         try {
+            console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
+
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/token/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
+                mode: 'cors',  // Add this
             });
+            
 
             if (!response.ok) {
                 throw new Error('Invalid credentials');

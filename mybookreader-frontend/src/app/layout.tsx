@@ -11,7 +11,7 @@ export default function RootLayout({
     <AuthProvider>
       <html lang="en">
         <body
-          className={`${poppins.variable} ${sofia.variable} bg-primary max-w-[1440px] min-w-[375px] m-auto`}
+          className={`${poppins.variable} ${sofia.variable} bg-primary  min-w-[375px] m-auto`}
         >{children}</body>
       </html>
     </AuthProvider>
